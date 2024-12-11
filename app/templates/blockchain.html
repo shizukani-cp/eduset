@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}ブロックチェーン - {{ super() }}{% endblock %}
+
+{% block content %}
+<h1>ブロックチェーン</h1>
+<ul>
+  {% for block in blockchain.chain %}
+  <li>Index: {{ block.index }}, Hash: {{ block.hash }}, Previous Hash: {{ block.previous_hash }}, Data: {{ block.data }}
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
