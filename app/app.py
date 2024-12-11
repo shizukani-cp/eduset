@@ -96,7 +96,8 @@ def register():
     if form.validate_on_submit():
         # メールアドレスの検証
         if not is_valid_email(form.email.data):
-            return "無効なメールアドレスです。"
+            form.email.errors.append("無効なメールアドレスです。")
+            return render_template('register.html', form=form)
 
         try:
             user = User(name=form.name.data, email=form.email.data)
@@ -118,11 +119,13 @@ def register():
             db.session.rollback()
             error_message = str(e)
             if 'UNIQUE constraint failed' in error_message:
-                return "メールアドレスは既に使用されています。"
+                form.email.errors.append("メールアドレスは既に使用されています。")
+                return render_template('register.html', form=form)
             elif 'NOT NULL constraint failed' in error_message:
                 return "必須フィールドが空です。"
             else:
                 return "不明なエラーが発生しました。"
+    
     return render_template('register.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -133,6 +136,10 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user)
             return redirect(url_for('index'))
+        
+        # ログイン失敗時のエラーメッセージ
+        form.email.errors.append("メールアドレスまたはパスワードが無効です。")
+
     return render_template('login.html', form=form)
 
 @app.route('/transfer', methods=['GET', 'POST'])
@@ -140,23 +147,35 @@ def login():
 def transfer():
     users = User.query.all()
     user_names = [(user.name, user.name) for user in users if user.id != current_user.id]
+    
     form = TransferForm()
+    
+    # プルダウンメニューにユーザー名を設定
     form.recipient_name.choices = user_names
+    
     if form.validate_on_submit():
         recipient = User.query.filter_by(name=form.recipient_name.data).first()
+        
         if recipient:
             if current_user.balance >= form.amount.data:
                 current_user.balance -= form.amount.data
                 recipient.balance += form.amount.data
+                
                 db.session.commit()
+                
                 new_block = Block(len(blockchain.chain), blockchain.get_latest_block().hash,
                                   int(time.time()), f"送金: {current_user.name} -> {recipient.name} {form.amount.data} Z", "")
+                
                 blockchain.add_block(new_block)
+                
                 return redirect(url_for('index'))
+            
             else:
                 return "送金に失敗しました。残高が不足しています。"
+        
         else:
             return "受信者が見つかりませんでした。"
+    
     return render_template('transfer.html', form=form)
 
 @app.route('/logout')
@@ -172,5 +191,5 @@ if __name__ == '__main__':
     with app.app_context():
         db.drop_all()
         db.create_all()
+    
     app.run(debug=True)
-
