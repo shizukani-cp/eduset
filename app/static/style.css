@@ -1,3 +1,7 @@
 form {
   margin-left: 0px;
 }
+
+.flashes {
+  color: red;
+}

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
@@ -156,6 +156,11 @@ def transfer():
     if form.validate_on_submit():
         recipient = User.query.filter_by(name=form.recipient_name.data).first()
         
+        # 送金額が0または負でないことを確認
+        if form.amount.data <= 0:
+            flash("送金額は正の数でなければなりません。", "error")
+            return render_template('transfer.html', form=form)
+
         if recipient:
             if current_user.balance >= form.amount.data:
                 current_user.balance -= form.amount.data
@@ -171,10 +176,10 @@ def transfer():
                 return redirect(url_for('index'))
             
             else:
-                return "送金に失敗しました。残高が不足しています。"
+                flash("送金に失敗しました。残高が不足しています。", "error")
         
         else:
-            return "受信者が見つかりませんでした。"
+            flash("受信者が見つかりませんでした。", "error")
     
     return render_template('transfer.html', form=form)
 
@@ -193,3 +198,4 @@ if __name__ == '__main__':
         db.create_all()
     
     app.run(debug=True)
+

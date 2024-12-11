@@ -1,35 +1,45 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-  <meta charset="UTF-8">
-  <title>{% block title %}eduset{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='basestyle.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>{% block title %}MyPage{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
-  <header>
-    <p>ヘッダー</p>
-    <nav>
-      <ul>
-        <li><a href="{{ url_for('index') }}">ホーム</a></li>
-        <li><a href="{{ url_for('blockchain_view') }}">ブロックチェーン</a></li>
-        {% if current_user.is_anonymous %}
-        <li><a href="{{ url_for('register') }}">登録</a></li>
-        <li><a href="{{ url_for('login') }}">ログイン</a></li>
-        {% else %}
-        <li><a href="{{ url_for('logout') }}">ログアウト</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  </header>
-  <main>
-    {% block content %}{% endblock %}
-  </main>
-  <footer>
-    <p>フッター</p>
-  </footer>
-</body>
+    <header>
+        <p>ヘッダー</p>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">ホーム</a></li>
+                {% if current_user.is_anonymous %}
+                    <li><a href="{{ url_for('register') }}">登録</a></li>
+                    <li><a href="{{ url_for('login') }}">ログイン</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('transfer') }}">送金</a></li>
+                    <li><a href="{{ url_for('logout') }}">ログアウト</a></li>
+                    <li><a href="{{ url_for('blockchain_view') }}">ブロックチェーン</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer>
+        <p>フッター</p>
+    </footer>
+</body>
 </html>
