@@ -5,8 +5,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Email, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.exc import IntegrityError
 import hashlib
 import time
+import re
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -80,6 +82,10 @@ class TransferForm(FlaskForm):
     amount = IntegerField('送金額', validators=[DataRequired()])
     submit = SubmitField('送金')
 
+def is_valid_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -88,6 +94,10 @@ def index():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
+        # メールアドレスの検証
+        if not is_valid_email(form.email.data):
+            return "無効なメールアドレスです。"
+
         try:
             user = User(name=form.name.data, email=form.email.data)
             user.set_password(form.password.data)
@@ -96,7 +106,8 @@ def register():
             db.session.commit()
 
             # システムからの初期お金をブロックチェーンに記録
-            new_block = Block(len(blockchain.chain), blockchain.get_latest_block().hash, int(time.time()), f"システムから {user.name} へ 100 コイン", "")
+            new_block = Block(len(blockchain.chain), blockchain.get_latest_block().hash,
+                              int(time.time()), f"システムから {user.name} へ 100 Z", "")
             blockchain.add_block(new_block)
 
             # 登録後に自動的にログイン
@@ -138,7 +149,8 @@ def transfer():
                 current_user.balance -= form.amount.data
                 recipient.balance += form.amount.data
                 db.session.commit()
-                new_block = Block(len(blockchain.chain), blockchain.get_latest_block().hash, int(time.time()), f"送金: {current_user.name} -> {recipient.name} {form.amount.data}コイン", "")
+                new_block = Block(len(blockchain.chain), blockchain.get_latest_block().hash,
+                                  int(time.time()), f"送金: {current_user.name} -> {recipient.name} {form.amount.data} Z", "")
                 blockchain.add_block(new_block)
                 return redirect(url_for('index'))
             else:
