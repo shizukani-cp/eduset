@@ -5,8 +5,8 @@
 {% block content %}
 <h1>ホーム</h1>
 {% if current_user.is_anonymous %}
-<p><a href="{{ url_for('register') }}">登録</a></p>
-<p><a href="{{ url_for('login') }}">ログイン</a></p>
+<p>ログインしていないため、送金ができないようです…<a href="{{ url_for('login') }}">ログイン</a>して、送金などをできるようにしましょう!</p>
+<p>アカウントがないのなら、<a href="{{ url_for('register') }}">登録</a>しましょう!</p>
 {% else %}
 <p>ようこそ、{{ current_user.name }}さん!</p>
 <p>残高: {{ current_user.balance }} Z</p>
