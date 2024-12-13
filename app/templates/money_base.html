@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block header %}
+<ul>
+  <li><a href="{{ url_for('blockchain_view') }}">ブロックチェーン</a></li>
+  {% if current_user.is_authenticated %}
+  <li><a href="{{ url_for('transfer') }}">送金</a></li>
+  {% endif %}
+</ul>
+{% endblock %}
