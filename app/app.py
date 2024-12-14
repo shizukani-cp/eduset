@@ -90,6 +90,10 @@ def is_valid_email(email):
 def index():
     return render_template('index.html')
 
+@app.route('/money/')
+def money_index():
+    return render_template('money/index.html')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -142,7 +146,7 @@ def login():
 
     return render_template('login.html', form=form)
 
-@app.route('/transfer', methods=['GET', 'POST'])
+@app.route('/money/transfer', methods=['GET', 'POST'])
 @login_required
 def transfer():
     users = User.query.all()
@@ -181,16 +185,16 @@ def transfer():
         else:
             flash("受信者が見つかりませんでした。", "error")
     
-    return render_template('transfer.html', form=form)
+    return render_template('money/transfer.html', form=form)
 
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/blockchain')
+@app.route('/money/blockchain')
 def blockchain_view():
-    return render_template('blockchain.html', blockchain=blockchain)
+    return render_template('money/blockchain.html', blockchain=blockchain)
 
 if __name__ == '__main__':
     with app.app_context():

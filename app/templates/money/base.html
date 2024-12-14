@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}仮想通貨 - {{ super() }}{% endblock %}
+
 {% block header %}
 <ul>
   <li><a href="{{ url_for('blockchain_view') }}">ブロックチェーン</a></li>
