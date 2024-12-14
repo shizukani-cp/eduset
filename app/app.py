@@ -11,13 +11,13 @@ import time
 import re
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config["SECRET_KEY"] = "your_secret_key"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
 db = SQLAlchemy(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = "login"
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -49,7 +49,7 @@ class Blockchain:
 
     def calculate_hash(self, index, previous_hash, timestamp, data):
         value = str(index) + str(previous_hash) + str(timestamp) + str(data)
-        return hashlib.sha256(value.encode('utf-8')).hexdigest()
+        return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
     def get_latest_block(self):
         return self.chain[-1]
@@ -66,42 +66,42 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 class RegistrationForm(FlaskForm):
-    name = StringField('名前', validators=[DataRequired()])
-    email = StringField('メールアドレス', validators=[DataRequired(), Email()])
-    password = PasswordField('パスワード', validators=[DataRequired()])
-    confirm_password = PasswordField('パスワードの確認', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('登録')
+    name = StringField("名前", validators=[DataRequired()])
+    email = StringField("メールアドレス", validators=[DataRequired(), Email()])
+    password = PasswordField("パスワード", validators=[DataRequired()])
+    confirm_password = PasswordField("パスワードの確認", validators=[DataRequired(), EqualTo("password")])
+    submit = SubmitField("登録")
 
 class LoginForm(FlaskForm):
-    email = StringField('メールアドレス', validators=[DataRequired(), Email()])
-    password = PasswordField('パスワード', validators=[DataRequired()])
-    submit = SubmitField('ログイン')
+    email = StringField("メールアドレス", validators=[DataRequired(), Email()])
+    password = PasswordField("パスワード", validators=[DataRequired()])
+    submit = SubmitField("ログイン")
 
 class TransferForm(FlaskForm):
-    recipient_name = SelectField('送金先', coerce=str)
-    amount = IntegerField('送金額', validators=[DataRequired()])
-    submit = SubmitField('送金')
+    recipient_name = SelectField("送金先", coerce=str)
+    amount = IntegerField("送金額", validators=[DataRequired()])
+    submit = SubmitField("送金")
 
 def is_valid_email(email):
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return re.match(pattern, email) is not None
 
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/money/')
+@app.route("/money/")
 def money_index():
-    return render_template('money/index.html')
+    return render_template("money/index.html")
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         # メールアドレスの検証
         if not is_valid_email(form.email.data):
             form.email.errors.append("無効なメールアドレスです。")
-            return render_template('register.html', form=form)
+            return render_template("register.html", form=form)
 
         try:
             user = User(name=form.name.data, email=form.email.data)
@@ -118,35 +118,35 @@ def register():
             # 登録後に自動的にログイン
             login_user(user)
 
-            return redirect(url_for('index'))
+            return redirect(url_for("index"))
         except IntegrityError as e:
             db.session.rollback()
             error_message = str(e)
-            if 'UNIQUE constraint failed' in error_message:
+            if "UNIQUE constraint failed" in error_message:
                 form.email.errors.append("メールアドレスは既に使用されています。")
-                return render_template('register.html', form=form)
-            elif 'NOT NULL constraint failed' in error_message:
+                return render_template("register.html", form=form)
+            elif "NOT NULL constraint failed" in error_message:
                 return "必須フィールドが空です。"
             else:
                 return "不明なエラーが発生しました。"
     
-    return render_template('register.html', form=form)
+    return render_template("register.html", form=form)
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
-            return redirect(url_for('index'))
+            return redirect(url_for("index"))
         
         # ログイン失敗時のエラーメッセージ
         form.email.errors.append("メールアドレスまたはパスワードが無効です。")
 
-    return render_template('login.html', form=form)
+    return render_template("login.html", form=form)
 
-@app.route('/money/transfer', methods=['GET', 'POST'])
+@app.route("/money/transfer", methods=["GET", "POST"])
 @login_required
 def transfer():
     users = User.query.all()
@@ -163,7 +163,7 @@ def transfer():
         # 送金額が0または負でないことを確認
         if form.amount.data <= 0:
             flash("送金額は正の数でなければなりません。", "error")
-            return render_template('transfer.html', form=form)
+            return render_template("transfer.html", form=form)
 
         if recipient:
             if current_user.balance >= form.amount.data:
@@ -177,7 +177,7 @@ def transfer():
                 
                 blockchain.add_block(new_block)
                 
-                return redirect(url_for('index'))
+                return redirect(url_for("index"))
             
             else:
                 flash("送金に失敗しました。残高が不足しています。", "error")
@@ -185,21 +185,21 @@ def transfer():
         else:
             flash("受信者が見つかりませんでした。", "error")
     
-    return render_template('money/transfer.html', form=form)
+    return render_template("money/transfer.html", form=form)
 
-@app.route('/logout')
+@app.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for("index"))
 
-@app.route('/money/blockchain')
+@app.route("/money/blockchain")
 def blockchain_view():
-    return render_template('money/blockchain.html', blockchain=blockchain)
+    return render_template("money/blockchain.html", blockchain=blockchain)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with app.app_context():
         db.drop_all()
         db.create_all()
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
 
