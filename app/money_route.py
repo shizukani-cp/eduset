@@ -1,7 +1,7 @@
 import time
 from flask import render_template, redirect, url_for
 from flask_login import login_required, current_user
-from models import app, db, User, Block, blockchain
+from models import app, db, User, Transaction
 import forms
 
 def define_route():
@@ -32,16 +32,14 @@ def define_route():
                 if current_user.balance >= form.amount.data:
                     current_user.balance -= form.amount.data
                     recipient.balance += form.amount.data
-                
+
+                    db.session.add(Transaction(
+                                        sender_id=current_user.id,
+                                        receiver_id=recipient.id,
+                                        amount=form.amount.data))
                     db.session.commit()
-                
-                    new_block = Block(len(blockchain.chain), blockchain.get_latest_block().hash,
-                                      int(time.time()), f"送金: {current_user.name} -> {recipient.name} {form.amount.data} Z", "")
-                
-                    blockchain.add_block(new_block)
-                
                     return redirect(url_for("index"))
-            
+
                 else:
                     flash("送金に失敗しました。残高が不足しています。", "error")
         
@@ -50,7 +48,13 @@ def define_route():
     
         return render_template("money/transfer.html", form=form)
 
-    @app.route("/money/blockchain")
-    def blockchain_view():
-        return render_template("money/blockchain.html", blockchain=blockchain)
-
+    @app.route("/money/transactions")
+    @login_required
+    def transaction_view():
+        return render_template(
+                    "money/transactions.html",
+                    transactions=db.session.query(
+                        Transaction
+                    ).filter(
+                        Transaction.sender_id == current_user.id or Transaction.receiver_id == current_user.id
+                    ).all())

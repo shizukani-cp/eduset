@@ -2,7 +2,7 @@ import re, time
 from sqlalchemy.exc import IntegrityError
 from flask_login import login_user, logout_user, login_required, current_user
 from flask import render_template, redirect, url_for
-from models import app, db, login_manager, User, Block, blockchain
+from models import app, db, login_manager, Transaction, User, sysuser
 import forms
 
 @login_manager.user_loader
@@ -28,12 +28,10 @@ def define_route():
                 user.set_password(form.password.data)
                 user.balance = 100  # 初期バランスを設定
                 db.session.add(user)
-                db.session.commit()
 
-                # システムからの初期お金をブロックチェーンに記録
-                new_block = Block(len(blockchain.chain), blockchain.get_latest_block().hash,
-                                  int(time.time()), f"システムから {user.name} へ 100 Z", "")
-                blockchain.add_block(new_block)
+                db.session.add(Transaction(sender_id=sysuser.id, receiver_id=user.id, amount=100))
+
+                db.session.commit()
 
                 # 登録後に自動的にログイン
                 login_user(user)

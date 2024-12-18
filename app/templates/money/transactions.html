@@ -1,0 +1,10 @@
+{% extends "money/base.html" %}
+
+{% block content %}
+<h1>取引履歴</h1>
+<ul>
+  {% for transaction in transactions %}
+  <li>{{ transaction.sender.name }}から{{ transaction.receiver.name }}へ{{ transaction.amount }}Z</li>
+  {% endfor %}
+</ul>
+{% endblock %}

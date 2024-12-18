@@ -5,7 +5,7 @@
 {% block header %}
 <ul>
   <li><a href="{{ url_for('money_index') }}">ホーム</a></li>
-  <li><a href="{{ url_for('blockchain_view') }}">ブロックチェーン</a></li>
+  <li><a href="{{ url_for('transaction_view') }}">送金履歴</a></li>
   {% if current_user.is_authenticated %}
   <li><a href="{{ url_for('transfer') }}">送金</a></li>
   {% endif %}
