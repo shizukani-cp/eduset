@@ -12,12 +12,8 @@ def define_route():
     @app.route("/money/transfer", methods=["GET", "POST"])
     @login_required
     def transfer():
-        print(User.query.all())
-        print(current_user.id, sysuser_id)
         users = User.query.filter(~User.id.in_([current_user.id, sysuser_id])).all()
-        print(users)
         user_names = [(user.id, user.name) for user in users]
-        print(user_names)
 
         form = forms.TransferForm()
 
