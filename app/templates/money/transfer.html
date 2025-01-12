@@ -6,7 +6,7 @@
 <h1>送金</h1>
 <form method="POST">
   {{ form.hidden_tag() }}
-  {{ form.recipient_name.label }} {{ form.recipient_name() }}
+  {{ form.recipient_id.label }} {{ form.recipient_id() }}
   {{ form.amount.label }} {{ form.amount() }} Z
   {{ form.submit() }}
 </form>

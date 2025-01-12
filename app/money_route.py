@@ -1,7 +1,7 @@
 import time
 from flask import render_template, redirect, url_for
 from flask_login import login_required, current_user
-from models import app, db, User, Transaction
+from models import app, db, User, Transaction, sysuser_id
 import forms
 
 def define_route():
@@ -12,16 +12,20 @@ def define_route():
     @app.route("/money/transfer", methods=["GET", "POST"])
     @login_required
     def transfer():
-        users = User.query.all()
-        user_names = [(user.name, user.name) for user in users if user.id != current_user.id]
-    
+        print(User.query.all())
+        print(current_user.id, sysuser_id)
+        users = User.query.filter(~User.id.in_([current_user.id, sysuser_id])).all()
+        print(users)
+        user_names = [(user.id, user.name) for user in users]
+        print(user_names)
+
         form = forms.TransferForm()
-    
+
         # プルダウンメニューにユーザー名を設定
-        form.recipient_name.choices = user_names
+        form.recipient_id.choices = user_names
     
         if form.validate_on_submit():
-            recipient = User.query.filter_by(name=form.recipient_name.data).first()
+            recipient = User.query.filter_by(name=form.recipient_id.data).first()
         
             # 送金額が0または負でないことを確認
             if form.amount.data <= 0:
@@ -55,6 +59,6 @@ def define_route():
                     "money/transactions.html",
                     transactions=db.session.query(
                         Transaction
-                    ).filter(
-                        Transaction.sender_id == current_user.id or Transaction.receiver_id == current_user.id
+                    # ).filter(
+                        # Transaction.sender_id == current_user.id or Transaction.receiver_id == current_user.id
                     ).all())

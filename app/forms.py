@@ -15,7 +15,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField("ログイン")
 
 class TransferForm(FlaskForm):
-    recipient_name = SelectField("送金先", coerce=str)
+    recipient_id = SelectField("送金先", coerce=int)
     amount = IntegerField("送金額", validators=[DataRequired()])
     submit = SubmitField("送金")
 

@@ -2,7 +2,7 @@ import re, time
 from sqlalchemy.exc import IntegrityError
 from flask_login import login_user, logout_user, login_required, current_user
 from flask import render_template, redirect, url_for
-from models import app, db, login_manager, Transaction, User, sysuser
+from models import app, db, login_manager, Transaction, User, sysuser_id
 import forms
 
 @login_manager.user_loader
@@ -28,8 +28,11 @@ def define_route():
                 user.set_password(form.password.data)
                 user.balance = 100  # 初期バランスを設定
                 db.session.add(user)
+                db.session.flush()
 
-                db.session.add(Transaction(sender_id=sysuser.id, receiver_id=user.id, amount=100))
+                user = db.session.query(User).get(user.id)
+
+                db.session.add(Transaction(sender_id=sysuser_id, receiver_id=user.id, amount=100))
 
                 db.session.commit()
 

@@ -49,3 +49,6 @@ with app.app_context():
                     )
 
         db.session.add(sysuser)
+        db.session.commit()
+        db.session.refresh(sysuser)
+        sysuser_id = sysuser.id
