@@ -53,6 +53,22 @@ def define_route():
     
         return render_template("register.html", form=form)
 
+    @app.route("/update", methods=["GET", "POST"])
+    @login_required
+    def update():
+        form = forms.UpdateForm()
+        form.name.data = current_user.name
+        form.email.data = current_user.email
+        if form.validate_on_submit():
+            if current_user.check_password(form.password.data):
+                current_user.name = form.name.data
+                current_user.email = form.email.data
+                if form.new_password.data:
+                    current_user.set_password(form.new_password.data)
+            else:
+                form.password.errors.append("パスワードが無効です。")
+        return render_template("account.html", form=form)
+
     @app.route("/login", methods=["GET", "POST"])
     def login():
         form = forms.LoginForm()

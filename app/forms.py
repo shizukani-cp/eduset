@@ -19,3 +19,10 @@ class TransferForm(FlaskForm):
     amount = IntegerField("送金額", validators=[DataRequired()])
     submit = SubmitField("送金")
 
+class UpdateForm(FlaskForm):
+    name = StringField("名前", validators=[DataRequired()])
+    email = StringField("メールアドレス", validators=[DataRequired(), Email()])
+    new_password = PasswordField("新しいパスワード", validators=[])
+    confirm_new_password = PasswordField("新しいパスワードの確認", validators=[EqualTo("new_password")])
+    password = PasswordField("現在のパスワード", validators=[DataRequired()])
+    submit = SubmitField("登録")

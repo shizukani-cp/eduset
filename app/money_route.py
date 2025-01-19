@@ -21,8 +21,8 @@ def define_route():
         form.recipient_id.choices = user_names
     
         if form.validate_on_submit():
-            recipient = User.query.filter_by(name=form.recipient_id.data).first()
-        
+            recipient = User.query.filter_by(id=form.recipient_id.data).first()
+
             # 送金額が0または負でないことを確認
             if form.amount.data <= 0:
                 flash("送金額は正の数でなければなりません。", "error")
@@ -42,7 +42,7 @@ def define_route():
 
                 else:
                     flash("送金に失敗しました。残高が不足しています。", "error")
-        
+
             else:
                 flash("受信者が見つかりませんでした。", "error")
     

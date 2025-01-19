@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}ユーザー情報の更新 - {{ super() }}{% endblock %}
+
+{% block content %}
+<h1>ユーザー情報の更新</h1>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<ul class="flashes">
+  {% for category, message in messages %}
+  <li class="{{ category }}">{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+{% if form.errors %}
+<div style="color: red;">
+  <ul>
+    {% for field, errors in form.errors.items() %}
+    {% for error in errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<form method="POST">
+  {{ form.hidden_tag() }}
+  {{ form.name.label }} {{ form.name() }}
+  {{ form.email.label }} {{ form.email() }}
+  {{ form.password.label }} {{ form.password() }}
+  {{ form.new_password.label }} {{ form.new_password() }}
+  {{ form.confirm_new_password.label }} {{ form.confirm_new_password() }}
+  {{ form.submit() }}
+</form>
+{% endblock %}
