@@ -1,9 +1,10 @@
-import time, hashlib
+import os, time, hashlib, pickle
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
+from sqlalchemy.exc import NoResultFound
 from flask_login import LoginManager
 
 app = Flask(__name__)
@@ -40,15 +41,24 @@ class Transaction(db.Model):
     amount = db.Column(db.Integer)
 
 with app.app_context():
+    drop = os.environ.get("DROP")
+    db.create_all()
+    if drop.lower() == "true":
         db.drop_all()
-        db.create_all()
-
+    elif drop.lower() == "false":
+        pass
+        # with open("instance/sysuser.pkl", "rb") as f:
+        #     sysuser = pickle.load(f)
+    else:
+        raise ValueError("DROPの値が無効です")
+    try:
+        sysuser = db.session.query(User).filter(User.email == "system@example.com").one()
+    except NoResultFound:
         sysuser = User(name="システム",
                        email="system@example.com", # 必須だが不使用
                        password_hash="aaa",        #      〃
                     )
-
         db.session.add(sysuser)
         db.session.commit()
         db.session.refresh(sysuser)
-        sysuser_id = sysuser.id
+    sysuser_id = sysuser.id
