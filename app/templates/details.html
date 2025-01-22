@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}ユーザー情報 - {{ super() }}{% endblock %}
+
+{% block content %}
+<h1>ユーザー情報</h1>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<ul class="flashes">
+  {% for category, message in messages %}
+  <li class="{{ category }}">{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+<ul>
+  <li>名前: {{ user.name }}</li>
+  <li>メールアドレス: {{ user.email }}</li>
+</ul>
+<a href="{{ url_for('update') }}">更新</a>
+{% endblock %}

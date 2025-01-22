@@ -17,7 +17,7 @@
         <li><a href="{{ url_for('register') }}">登録</a></li>
         <li><a href="{{ url_for('login') }}">ログイン</a></li>
         {% else %}
-        <li><a href="{{ url_for('update') }}">アカウント情報の更新</a></li>
+        <li><a href="{{ url_for('detail') }}">アカウント情報</a></li>
         <li><a href="{{ url_for('logout') }}">ログアウト</a></li>
         {% endif %}
       </ul>

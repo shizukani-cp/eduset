@@ -53,6 +53,11 @@ def define_route():
     
         return render_template("register.html", form=form)
 
+    @app.route("/accountdetail")
+    @login_required
+    def detail():
+        return render_template("details.html", user=current_user)
+
     @app.route("/update", methods=["GET", "POST"])
     @login_required
     def update():
