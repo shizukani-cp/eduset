@@ -14,7 +14,7 @@ def is_valid_email(email):
     return re.match(pattern, email) is not None
 
 def define_route():
-    @app.route("/register", methods=["GET", "POST"])
+    @app.route("/account/register", methods=["GET", "POST"])
     def register():
         form = forms.RegistrationForm()
         if form.validate_on_submit():
@@ -51,14 +51,14 @@ def define_route():
                 else:
                     return "不明なエラーが発生しました。"
     
-        return render_template("register.html", form=form)
+        return render_template("account/register.html", form=form)
 
-    @app.route("/accountdetail")
+    @app.route("/account/detail")
     @login_required
     def detail():
-        return render_template("details.html", user=current_user)
+        return render_template("account/detail.html", user=current_user)
 
-    @app.route("/update", methods=["GET", "POST"])
+    @app.route("/account/update", methods=["GET", "POST"])
     @login_required
     def update():
         form = forms.UpdateForm()
@@ -72,9 +72,9 @@ def define_route():
                     current_user.set_password(form.new_password.data)
             else:
                 form.password.errors.append("パスワードが無効です。")
-        return render_template("account.html", form=form)
+        return render_template("account/update.html", form=form)
 
-    @app.route("/login", methods=["GET", "POST"])
+    @app.route("/account/login", methods=["GET", "POST"])
     def login():
         form = forms.LoginForm()
         if form.validate_on_submit():
@@ -86,9 +86,9 @@ def define_route():
             # ログイン失敗時のエラーメッセージ
             form.email.errors.append("メールアドレスまたはパスワードが無効です。")
 
-        return render_template("login.html", form=form)
+        return render_template("account/login.html", form=form)
 
-    @app.route("/logout")
+    @app.route("/account/logout")
     def logout():
         logout_user()
         return redirect(url_for("index"))
