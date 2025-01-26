@@ -26,7 +26,7 @@ def define_route():
             # 送金額が0または負でないことを確認
             if form.amount.data <= 0:
                 flash("送金額は正の数でなければなりません。", "error")
-                return render_template("transfer.html", form=form)
+                return render_template("money/transfer.html", form=form)
 
             if recipient:
                 if current_user.balance >= form.amount.data:

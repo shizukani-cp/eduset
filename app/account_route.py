@@ -21,7 +21,7 @@ def define_route():
             # メールアドレスの検証
             if not is_valid_email(form.email.data):
                 form.email.errors.append("無効なメールアドレスです。")
-                return render_template("register.html", form=form)
+                return render_template("account/register.html", form=form)
 
             try:
                 user = User(name=form.name.data, email=form.email.data)
@@ -45,7 +45,7 @@ def define_route():
                 error_message = str(e)
                 if "UNIQUE constraint failed" in error_message:
                     form.email.errors.append("メールアドレスは既に使用されています。")
-                    return render_template("register.html", form=form)
+                    return render_template("account/register.html", form=form)
                 elif "NOT NULL constraint failed" in error_message:
                     return "必須フィールドが空です。"
                 else:
