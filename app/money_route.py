@@ -1,5 +1,6 @@
 import time
 from flask import render_template, redirect, url_for, flash
+from sqlalchemy import or_
 from flask_login import login_required, current_user
 from models import app, db, User, Transaction, sysuser_id
 import forms
@@ -55,6 +56,6 @@ def define_route():
                     "money/transactions.html",
                     transactions=db.session.query(
                         Transaction
-                    # ).filter(
-                        # Transaction.sender_id == current_user.id or Transaction.receiver_id == current_user.id
+                    ).filter(
+                        or_(Transaction.sender_id == current_user.id, Transaction.receiver_id == current_user.id)
                     ).all())
