@@ -42,15 +42,13 @@ class Transaction(db.Model):
 
 with app.app_context():
     drop = os.environ.get("DROP")
-    db.create_all()
     if drop.lower() == "true":
         db.drop_all()
     elif drop.lower() == "false":
         pass
-        # with open("instance/sysuser.pkl", "rb") as f:
-        #     sysuser = pickle.load(f)
     else:
         raise ValueError("DROPの値が無効です")
+    db.create_all()
     try:
         sysuser = db.session.query(User).filter(User.email == "system@example.com").one()
     except NoResultFound:
