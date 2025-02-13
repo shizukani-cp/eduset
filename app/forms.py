@@ -14,11 +14,6 @@ class LoginForm(FlaskForm):
     password = PasswordField("パスワード", validators=[DataRequired()])
     submit = SubmitField("ログイン")
 
-class TransferForm(FlaskForm):
-    recipient_id = SelectField("送金先", coerce=int)
-    amount = IntegerField("送金額", validators=[DataRequired()])
-    submit = SubmitField("送金")
-
 class UpdateForm(FlaskForm):
     name = StringField("名前", validators=[DataRequired()])
     email = StringField("メールアドレス", validators=[DataRequired(), Email()])
@@ -26,3 +21,12 @@ class UpdateForm(FlaskForm):
     confirm_new_password = PasswordField("新しいパスワードの確認", validators=[EqualTo("new_password")])
     password = PasswordField("現在のパスワード", validators=[DataRequired()])
     submit = SubmitField("登録")
+
+class TransferForm(FlaskForm):
+    recipient_id = SelectField("送金先", coerce=int)
+    amount = IntegerField("送金額", validators=[DataRequired()])
+    submit = SubmitField("送金")
+
+class CreateClassForm(FlaskForm):
+    name = StringField("名前", validators=[DataRequired()])
+    submit = SubmitField("作成")
