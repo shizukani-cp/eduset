@@ -1,4 +1,5 @@
 import os, time, hashlib, pickle
+from enum import Enum
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask
@@ -16,6 +17,16 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+class UserRole(Enum):
+    student = 10
+    teacher = 20
+    administrator = 30
+
+    @classmethod
+    def choices(cls):
+        return [(choice.value, choice.name) for choice in cls]
+
+# account
 class User(UserMixin, db.Model):
     __tablename__ = "user"
 
@@ -24,6 +35,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     balance = db.Column(db.Integer, default=0)
+    role = db.Column(db.Integer, nullable=False)
     transactions_sent = db.relationship("Transaction", foreign_keys="Transaction.sender_id", backref="sender", lazy="select")
     transactions_received = db.relationship("Transaction", foreign_keys="Transaction.receiver_id", backref="receiver", lazy="select")
 
@@ -33,6 +45,7 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+# money
 class Transaction(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -55,6 +68,7 @@ with app.app_context():
         sysuser = User(name="システム",
                        email="system@example.com", # 必須だが不使用
                        password_hash="aaa",        #      〃
+                       role=30                     # administrator
                     )
         db.session.add(sysuser)
         db.session.commit()

@@ -1,10 +1,12 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Email, EqualTo
+from models import UserRole
 
 class RegistrationForm(FlaskForm):
     name = StringField("名前", validators=[DataRequired()])
     email = StringField("メールアドレス", validators=[DataRequired(), Email()])
+    role = SelectField("役割", choices=UserRole.choices(), coerce=int)
     password = PasswordField("パスワード", validators=[DataRequired()])
     confirm_password = PasswordField("パスワードの確認", validators=[DataRequired(), EqualTo("password")])
     submit = SubmitField("登録")

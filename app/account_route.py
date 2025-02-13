@@ -24,7 +24,7 @@ def define_route():
                 return render_template("account/register.html", form=form)
 
             try:
-                user = User(name=form.name.data, email=form.email.data)
+                user = User(name=form.name.data, email=form.email.data, role=form.role.data)
                 user.set_password(form.password.data)
                 user.balance = 100  # 初期バランスを設定
                 db.session.add(user)
