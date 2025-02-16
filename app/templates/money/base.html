@@ -3,6 +3,7 @@
 {% block title %}仮想通貨 - {{ super() }}{% endblock %}
 
 {% block header %}
+{{ super() }}
 <ul>
   <li><a href="{{ url_for('money_index') }}">ホーム</a></li>
   <li><a href="{{ url_for('transaction_view') }}">送金履歴</a></li>

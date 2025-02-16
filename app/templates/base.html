@@ -11,6 +11,7 @@
 <body>
   <header>
     <nav>
+      {% block header %}
       <ul>
         <li><a href="{{ url_for('index') }}">ホーム</a></li>
         {% if current_user.is_anonymous %}
@@ -21,7 +22,7 @@
         <li><a href="{{ url_for('logout') }}">ログアウト</a></li>
         {% endif %}
       </ul>
-      {% block header %}{% endblock %}
+      {% endblock %}
     </nav>
   </header>
 
