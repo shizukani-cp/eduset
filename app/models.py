@@ -4,7 +4,6 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey
 from sqlalchemy.exc import NoResultFound
 from flask_login import LoginManager
 
@@ -49,8 +48,8 @@ class User(UserMixin, db.Model):
 class Transaction(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(ForeignKey("user.id"))
-    receiver_id = db.Column(ForeignKey("user.id"))
+    sender_id = db.Column(db.ForeignKey("user.id"))
+    receiver_id = db.Column(db.ForeignKey("user.id"))
     amount = db.Column(db.Integer)
 
 with app.app_context():
