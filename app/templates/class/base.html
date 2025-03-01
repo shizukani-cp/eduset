@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}クラス - {{ super() }}{% endblock %}
+
+{% block header %}
+{{ super() }}
+<ul>
+  <li><a href="{{ url_for('class_index') }}">参加しているクラスの一覧</a></li>
+</ul>
+{% endblock %}

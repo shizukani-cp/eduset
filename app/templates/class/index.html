@@ -1,0 +1,15 @@
+{% extends "class/base.html" %}
+
+{% block title %}一覧 - {{ super() }}{% endblock %}
+
+{% block content %}
+{% if role >= 20 %}
+<a href="{{ url_for('new_class') }}">新しいクラスを作成</a>
+{% endif %}
+<h1>参加しているクラス</h1>
+<ul>
+  {% for class in classes %}
+  <li><a href="">{{ class.name }}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}

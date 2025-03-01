@@ -31,4 +31,5 @@ class TransferForm(FlaskForm):
 
 class CreateClassForm(FlaskForm):
     name = StringField("名前", validators=[DataRequired()])
+    parent = SelectField("親クラス")
     submit = SubmitField("作成")

@@ -1,0 +1,24 @@
+{% extends "class/base.html" %}
+
+{% block title %}作成 - {{ super() }}{% endblock %}
+
+{% block content %}
+<h1>クラスの作成</h1>
+{% if form.errors %}
+<div style="color: red;">
+  <ul>
+    {% for field, errors in form.errors.items() %}
+    {% for error in errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+<form method="POST">
+  {{ form.hidden_tag() }}
+  {{ form.name.label }} {{ form.name() }}
+  {{ form.parent.label }} {{ form.parent() }}
+  {{ form.submit() }}
+</form>
+{% endblock %}

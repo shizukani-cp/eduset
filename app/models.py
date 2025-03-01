@@ -16,14 +16,16 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+class Enum(Enum):
+    @classmethod
+    def choices(cls):
+        return [(choice.value, choice.name) for choice in cls]
+
 class UserRole(Enum):
     student = 10
     teacher = 20
     administrator = 30
 
-    @classmethod
-    def choices(cls):
-        return [(choice.value, choice.name) for choice in cls]
 
 # account
 class User(UserMixin, db.Model):
@@ -52,6 +54,22 @@ class Transaction(db.Model):
     receiver_id = db.Column(db.ForeignKey("user.id"))
     amount = db.Column(db.Integer)
 
+# class
+class Class(db.Model):
+
+    __tablename__ = "class"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
+
+class ClassUser(db.Model):
+
+    __tablename__ = "user_class"
+
+    class_id = db.Column(db.Integer, db.ForeignKey("class.id"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+
 with app.app_context():
     drop = os.environ.get("DROP")
     if drop.lower() == "true":
@@ -63,6 +81,7 @@ with app.app_context():
     db.create_all()
     try:
         sysuser = db.session.query(User).filter(User.email == "system@example.com").one()
+        rootclass = db.session.query(Class).filter(Class.id == Class.parent_id).one()
     except NoResultFound:
         sysuser = User(name="システム",
                        email="system@example.com", # 必須だが不使用
@@ -70,6 +89,14 @@ with app.app_context():
                        role=30                     # administrator
                     )
         db.session.add(sysuser)
+        rootclass = Class(name="ルート",
+                          parent_id=1
+                      )
+        db.session.add(rootclass)
         db.session.commit()
+        rootclass.parent_id = rootclass.id
         db.session.refresh(sysuser)
+        db.session.refresh(rootclass)
+        db.session.commit()
     sysuser_id = sysuser.id
+    rootclass_id = rootclass.id

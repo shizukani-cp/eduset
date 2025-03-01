@@ -6,9 +6,11 @@ from flask import render_template
 from models import app
 import account_route
 import money_route
+import class_route
 
 account_route.define_route()
 money_route.define_route()
+class_route.define_route()
 
 @app.route("/")
 def index():
