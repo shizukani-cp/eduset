@@ -8,8 +8,8 @@
 {% endif %}
 <h1>参加しているクラス</h1>
 <ul>
-  {% for class in classes %}
-  <li><a href="">{{ class.name }}</a></li>
+  {% for class_ in classes %}
+  <li><a href="{{ url_for('class_from_id', class_id=class_.id) }}">{{ class_.name }}</a></li>
   {% endfor %}
 </ul>
 {% endblock %}

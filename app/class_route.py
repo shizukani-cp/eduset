@@ -13,13 +13,12 @@ def define_route():
     @app.route("/class/")
     @login_required
     def class_index():
+        classes = db.session.query(Class).join(ClassUser).filter(
+            ClassUser.user_id == current_user.id
+        ).all()
         return render_template(
             "class/index.html",
-            classes=db.session.query(
-                ClassUser
-            ).filter(
-                ClassUser.user_id == current_user.id
-            ).all(),
+            classes=classes,
             role=int(current_user.role)
         )
 
