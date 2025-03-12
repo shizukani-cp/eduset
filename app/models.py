@@ -1,11 +1,10 @@
 import os
 from enum import Enum
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask
+from flask_login import LoginManager, UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import NoResultFound
-from flask_login import LoginManager
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your_secret_key"
