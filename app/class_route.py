@@ -1,4 +1,4 @@
-from flask import render_template, abort, redirect, url_for
+from flask import render_template, abort, redirect, url_for, request
 from flask_login import login_required, current_user
 from models import app, db, Class, ClassUser, Post, Work, WorkFile, rootclass_id
 import forms
@@ -46,13 +46,43 @@ def define_route():
         else:
             abort(403)
 
-    @app.route("/class/<int:class_id>")
+    @app.route("/class/<int:class_id>", methods=["GET", "POST"])
     @login_required
     def class_from_id(class_id):
+        form = forms.PostForm()
+        if form.validate_on_submit():
+            print(form.body.data)
+            post = Post(poster_id=current_user.id, content=form.body.data, class_id=class_id)
+            db.session.add(post)
+            db.session.commit()
+            return redirect(request.url)
+        else:
+            return render_template(
+                "class/stream.html",
+                class_=get_validate_class(class_id),
+                posts=db.session.query(Post)
+                    .filter(Post.class_id == class_id)
+                    .all(),
+                form=form
+            )
+
+    @app.route("/class/<int:class_id>/work")
+    @login_required
+    def works(class_id):
         return render_template(
-            "class/stream.html",
+            "class/works.html",
             class_=get_validate_class(class_id),
-            posts=db.session.query(Post)
-                .filter(Post.class_id == class_id)
+            works=Work.query.all()
+        )
+
+    @app.route("/class/<int:class_id>/work/<int:work_id>")
+    @login_required
+    def work(class_id, work_id):
+        return render_template(
+            "class/work.html",
+            class_=get_validate_class(class_id),
+            work=Work.query.get(work_id),
+            workfiles=db.session.query(WorkFile)
+                .filter(WorkFile.user_id == current_user.id)
                 .all()
         )

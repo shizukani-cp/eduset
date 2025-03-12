@@ -5,3 +5,12 @@ form {
 .flashes {
   color: red;
 }
+
+li.post {
+  list-style: none;
+  width: 40%
+}
+
+span.created-at {
+  float: right;
+}

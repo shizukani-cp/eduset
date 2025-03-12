@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo
 from models import UserRole
 
@@ -33,3 +33,8 @@ class CreateClassForm(FlaskForm):
     name = StringField("名前", validators=[DataRequired()])
     parent = SelectField("親クラス")
     submit = SubmitField("作成")
+
+class PostForm(FlaskForm):
+    body = TextAreaField("内容")
+    submit = SubmitField("投稿")
+

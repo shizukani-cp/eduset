@@ -3,7 +3,9 @@ from enum import Enum
 from flask import Flask
 from flask_login import LoginManager, UserMixin
 from flask_sqlalchemy import SQLAlchemy
+import pytz
 from sqlalchemy.exc import NoResultFound
+from sqlalchemy.sql import func
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -38,6 +40,7 @@ class User(UserMixin, db.Model):
     role = db.Column(db.Integer, nullable=False)
     transactions_sent = db.relationship("Transaction", foreign_keys="Transaction.sender_id", backref="sender", lazy="select")
     transactions_received = db.relationship("Transaction", foreign_keys="Transaction.receiver_id", backref="receiver", lazy="select")
+    post_as = db.relationship("Post", back_populates="poster")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -68,6 +71,35 @@ class ClassUser(db.Model):
 
     class_id = db.Column(db.Integer, db.ForeignKey("class.id"), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+
+class Post(db.Model):
+    __tablename__ = "post"
+
+    id = db.Column(db.Integer, primary_key=True)
+    poster_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    poster = db.relationship("User", back_populates="post_as")
+    content = db.Column(db.Text, nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
+    created_at = db.Column(db.DateTime, default=func.now(timezone='UTC'))
+
+class Work(db.Model):
+
+    __tablename__ = "work"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
+
+@app.template_filter('utc_to_jst')
+def utc_to_jst(utc_dt):
+    if utc_dt is None:
+        return None
+    utc_zone = pytz.timezone('UTC')
+    jst_zone = pytz.timezone('Asia/Tokyo')
+    utc_dt = utc_zone.localize(utc_dt)
+    jst_dt = utc_dt.astimezone(jst_zone)
+    return jst_dt.strftime('%Y-%m-%d %H:%M')
 
 with app.app_context():
     drop = os.environ.get("DROP")
