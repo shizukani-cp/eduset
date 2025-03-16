@@ -27,6 +27,20 @@ class UserRole(Enum):
     teacher = 20
     administrator = 30
 
+class FileType(Enum):
+    link = 1
+    text = 2
+    image = 3
+    movie = 4
+
+class File(db.Model):
+
+    __tablename__ = "file"
+
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.Enum(FileType), nullable=False)
+    name = db.Column(db.String(128), nullable=False)
+    body = db.Column(db.LargeBinary, nullable=False)
 
 # account
 class User(UserMixin, db.Model):
@@ -90,6 +104,15 @@ class Work(db.Model):
     name = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text, nullable=True)
     class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
+
+class WorkFile(db.Model):
+
+    __tablename__ = "work_file"
+
+    id = db.Column(db.Integer, primary_key=True)
+    file_id = db.Column(db.Integer, db.ForeignKey("file.id"), nullable=False)
+    work_id = db.Column(db.Integer, db.ForeignKey("work.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
 @app.template_filter('utc_to_jst')
 def utc_to_jst(utc_dt):

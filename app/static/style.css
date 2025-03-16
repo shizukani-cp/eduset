@@ -8,7 +8,13 @@ form {
 
 li.post {
   list-style: none;
-  width: 40%
+  width: 40%;
+  padding: 5px;
+  border: 2px solid;
+}
+
+span.name {
+  background: linear-gradient(transparent 50%, #464 50%);
 }
 
 span.created-at {

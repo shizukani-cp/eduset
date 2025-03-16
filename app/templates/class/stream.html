@@ -33,7 +33,7 @@
   <ul>
     {% for post in posts %}
     <li class="post">
-      <p><span class="name">{{ post.poster.name }}</span><span class="created-at"><time>{{ post.created_at | utc_to_jst }}</time></span></p>
+      <p><span class="name">{{ post.poster.name + {10: "", 15: " 保護者", 20: " 先生", 30:""}[post.poster.role] }}</span><span class="created-at"><time>{{ post.created_at | utc_to_jst }}</time></span></p>
       <p>{{ post.content }}</p>
     </li>
     {% endfor %}
