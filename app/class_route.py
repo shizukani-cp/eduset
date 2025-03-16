@@ -17,7 +17,7 @@ def define_route():
             ClassUser.user_id == current_user.id
         ).all()
         return render_template(
-            "class/index.html",
+            "class/all/index.html",
             classes=classes,
             role=int(current_user.role)
         )
@@ -42,7 +42,7 @@ def define_route():
                 db.session.commit()
                 return redirect(url_for("class_from_id", class_id=class_.id))
             else:
-                return render_template("class/new.html", form=form)
+                return render_template("class/all/new.html", form=form)
         else:
             abort(403)
 
@@ -51,14 +51,13 @@ def define_route():
     def class_from_id(class_id):
         form = forms.PostForm()
         if form.validate_on_submit():
-            print(form.body.data)
             post = Post(poster_id=current_user.id, content=form.body.data, class_id=class_id)
             db.session.add(post)
             db.session.commit()
             return redirect(request.url)
         else:
             return render_template(
-                "class/stream.html",
+                "class/each/stream.html",
                 class_=get_validate_class(class_id),
                 posts=db.session.query(Post)
                     .filter(Post.class_id == class_id)
@@ -70,7 +69,7 @@ def define_route():
     @login_required
     def works(class_id):
         return render_template(
-            "class/works.html",
+            "class/each/works.html",
             class_=get_validate_class(class_id),
             works=Work.query.all()
         )
@@ -79,7 +78,7 @@ def define_route():
     @login_required
     def work(class_id, work_id):
         return render_template(
-            "class/work.html",
+            "class/each/work.html",
             class_=get_validate_class(class_id),
             work=Work.query.get(work_id),
             workfiles=db.session.query(WorkFile)

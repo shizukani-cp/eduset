@@ -1,0 +1,10 @@
+{% extends "class/each/base.html" %}
+
+{% block title %}{{ work.name }} - 課題 - {{ super() }}{% endblock %}
+
+{% block content %}
+<ul>
+  <h1>{{ work.name }}</h1>
+  <p>{{ work.description }}</p>
+</ul>
+{% endblock %}

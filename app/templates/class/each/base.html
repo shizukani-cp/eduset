@@ -1,0 +1,11 @@
+{% extends "class/all/base.html" %}
+
+{% block title %}{{ class_.name }} - {{ super() }}{% endblock %}
+
+{% block header %}
+{{ super() }}
+<ul>
+  <li><a href="{{ url_for('class_from_id', class_id=class_.id) }}">ストリーム</a></li>
+  <li><a href="{{ url_for('works', class_id=class_.id) }}">課題</a></li>
+</ul>
+{% endblock %}

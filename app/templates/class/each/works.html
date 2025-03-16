@@ -1,0 +1,17 @@
+{% extends "class/each/base.html" %}
+
+{% block title %}課題一覧 - {{ class_.name }} - {{ super() }}{% endblock %}
+
+{% block content %}
+<main>
+  <h1>{{ class_.name }}の課題</h1>
+  <ul>
+    {% for work in works %}
+    <li class="work">
+      <h3>{{ work.name }}<h3>
+      <p>{{ work.description }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+</main>
+{% endblock %}
